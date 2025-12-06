@@ -60,11 +60,8 @@ class _MyAppState extends State<MyApp> with WindowListener {
   void onWindowClose() async {
     bool isPreventClose = await windowManager.isPreventClose();
     if (isPreventClose) {
-    if (isPreventClose) {
       await windowManager.hide();
       await windowManager.setSkipTaskbar(true);
-    } else {
-    } else {
     }
   }
 
@@ -78,8 +75,7 @@ class _MyAppState extends State<MyApp> with WindowListener {
         } else if (timerService.themeMode == 'light') {
           brightness = Brightness.light;
         } else {
-        } else {
-          brightness = null;  
+          brightness = null;
         }
 
         return CupertinoApp(
