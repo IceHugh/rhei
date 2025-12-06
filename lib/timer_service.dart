@@ -40,6 +40,7 @@ class TimerService with ChangeNotifier {
   int _contentColor = 0xFFFFFFFF; // Default White
   String _fontFamily = 'system';
   double _uiOpacity = 1.0;
+  String _layoutMode = 'default';
 
   // Notifications
   final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -99,6 +100,7 @@ class TimerService with ChangeNotifier {
   int get contentColor => _contentColor;
   String get fontFamily => _fontFamily;
   double get uiOpacity => _uiOpacity;
+  String get layoutMode => _layoutMode;
 
   // ...
 
@@ -124,6 +126,7 @@ class TimerService with ChangeNotifier {
     _contentColor = prefs.getInt('contentColor') ?? 0xFFFFFFFF;
     _fontFamily = prefs.getString('fontFamily') ?? 'system';
     _uiOpacity = prefs.getDouble('uiOpacity') ?? 1.0;
+    _layoutMode = prefs.getString('layoutMode') ?? 'default';
     
     // Initialize timer with saved focus duration since we start in focus mode
     if (_currentMode == TimerMode.focus) {
@@ -156,6 +159,7 @@ class TimerService with ChangeNotifier {
     int? contentColor,
     String? fontFamily,
     double? uiOpacity,
+    String? layoutMode,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     if (focus != null) {
@@ -234,6 +238,10 @@ class TimerService with ChangeNotifier {
     if (uiOpacity != null) {
       _uiOpacity = uiOpacity;
       await prefs.setDouble('uiOpacity', uiOpacity);
+    }
+    if (layoutMode != null) {
+      _layoutMode = layoutMode;
+      await prefs.setString('layoutMode', layoutMode);
     }
     
     // Check if we need to update white noise (e.g. if we add a noise setting later)
