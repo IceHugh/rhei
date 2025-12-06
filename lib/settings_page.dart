@@ -381,8 +381,21 @@ class SettingsPage extends StatelessWidget {
                             _buildGlassTile(
                               context: context,
                               leading: _buildIcon(CupertinoIcons.infinite, CupertinoColors.systemOrange),
-                              title: const Text('Loop Mode'),
-                              additionalInfo: const Text('Auto-start Focus/Breaks'),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Text('Loop Mode'),
+                                  Text(
+                                    'Auto-start Focus/Breaks',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: isDarkMode ? CupertinoColors.systemGrey2 : CupertinoColors.secondaryLabel.resolveFrom(context),
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ],
+                              ),
                               trailing: Transform.scale(
                                 scale: 0.8,
                                 child: CupertinoSwitch(
