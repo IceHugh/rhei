@@ -5,10 +5,12 @@
 
 **Key Features:**
 - **Pomodoro Timer**: Core focus/break timer functionality.
-- **UI Design**: Modern Glassmorphism aesthetic with Custom Backgrounds (Color/Image).
+- **Layout Modes**: "Default" and "Gallery" layouts for different visual preferences.
+- **UI Customization**: Adjustable UI opacity, font selection, and theme modes (Light/Dark/System).
 - **Sound**: Custom alarm and ambient sound support (`audioplayers`).
 - **Notifications**: System notifications for timer events (`flutter_local_notifications`).
 - **Window Control**: "Always on Top" and other window management features (`window_manager`).
+- **Performance**: High-resolution image caching, memory optimization, and persistent background storage.
 - **Platforms**: Android, iOS, macOS, Windows.
 
 ## Environment
@@ -22,13 +24,6 @@
 - **Audio**: `audioplayers`.
 - **Desktop Utils**: `window_manager`.
 - **Plugins**: `flutter_launcher_icons`, `flutter_colorpicker`, `file_picker`.
-
-## User Preferences & Memories
-The following preferences have been observed and should be strictly followed:
-
-- **Language**: Always respond in Chinese (总是用中文回答).
-- **TypeScript**: Always use `import type` for type imports (typescript 通过import type 导入类型).
-- **Git Workflow**: Commit changes before starting major features or refactoring (在修改重大功能之前先保存git).
 
 ## Development Conventions
 - **Assets**:

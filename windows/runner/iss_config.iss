@@ -1,5 +1,7 @@
 #define MyAppName "PomoFlow"
-#define MyAppVersion "0.2.4"
+#ifndef MyAppVersion
+#define MyAppVersion "0.3.0"
+#endif
 #define MyAppPublisher "IceHugh"
 #define MyAppURL "https://github.com/IceHugh/PomoFlow"
 #define MyAppExeName "pomoflow.exe"
@@ -19,6 +21,8 @@ DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
+ArchitecturesAllowed=x64
+ArchitecturesInstallIn64BitMode=x64
 OutputDir=..\..\build\windows\runner\Release\Output
 OutputBaseFilename=PomoFlow_Setup
 SetupIconFile=resources\app_icon.ico
@@ -33,8 +37,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\..\build\windows\runner\Release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\build\windows\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\..\build\windows\x64\runner\Release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

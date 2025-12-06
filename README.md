@@ -9,10 +9,13 @@ A modern, high-performance Pomodoro timer application built with Flutter, featur
 
 - **🎨 Modern Glassmorphism Design**: A sleek, frosted-glass aesthetic offering a premium user experience.
 - **🖼️ Custom Backgrounds**: Personalize your timer with solid colors or your own images.
+- **📐 Layout Options**: Switch between the focused "Default" view or the aesthetic "Gallery" mode.
+- **🎨 Visual Customization**: Fine-tune UI opacity, select your favorite font, and toggle Light/Dark themes.
 - **⏱️ Customizable Timer**: Flexible focus and break durations to suit your workflow.
 - **🔊 Immersive Soundscapes**: Custom ambient sounds and pleasant alarm tones powered by `audioplayers`.
 - **🔔 Smart Notifications**: Native system notifications keep you informed without being intrusive (`flutter_local_notifications`).
 - **🪟 Advanced Window Control**: "Always on Top" mode ensures your timer is always visible when you need it (`window_manager`).
+- **⚡ Performance Optimized**: Efficient resource management ensuring low memory usage even with 8K backgrounds.
 - **💻 Cross-Platform**: Optimized for macOS, Windows, Android, and iOS.
 
 ## 🛠️ Tech Stack

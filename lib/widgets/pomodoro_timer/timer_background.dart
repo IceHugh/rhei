@@ -43,6 +43,9 @@ class TimerBackground extends StatelessWidget {
                  fit: BoxFit.cover,
                  width: double.infinity,
                  height: double.infinity,
+                 // Optimize memory: Limit decode size.
+                 // 2560 width is plenty for most displays as a background without wasting memory on 8K textures.
+                 cacheWidth: 2560, 
                  errorBuilder: (ctx, err, stack) => Container(color: Colors.black),
                  frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
                    if (wasSynchronouslyLoaded) return child;

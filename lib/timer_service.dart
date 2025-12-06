@@ -511,4 +511,11 @@ class TimerService with ChangeNotifier {
        // Ignore
     }
   }
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _alarmPlayer.dispose();
+    _whiteNoisePlayer.dispose();
+    super.dispose();
+  }
 }

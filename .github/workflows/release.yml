@@ -129,7 +129,7 @@ jobs:
         run: flutter build windows --release --dart-define=APP_VERSION=${{ env.VERSION }}
       - name: Build Windows Installer
         run: |
-          iscc windows/runner/iss_config.iss
+          iscc /DMyAppVersion="${{ env.VERSION }}" windows/runner/iss_config.iss
       - name: Release Windows Installer
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
