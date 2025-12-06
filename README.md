@@ -65,6 +65,20 @@ This project follows strictly configured lints. Check for issues:
 flutter analyze
 ```
 
+
+## ⚠️ Troubleshooting
+
+### macOS: "App is damaged" or "Unverified Developer"
+If you see a warning that "PomoFlow cannot be opened because Apple cannot check it for malicious software":
+
+1.  Open **System Settings** > **Privacy & Security**.
+2.  Scroll down to the security section and click **"Open Anyway"** for PomoFlow.
+
+Alternatively, running this command in Terminal will verify the app:
+```bash
+xattr -d com.apple.quarantine /path/to/PomoFlow.app
+```
+
 ## 📄 License
 
 [MIT License](LICENSE) (Placeholder)
