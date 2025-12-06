@@ -11,55 +11,63 @@ class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
   void _showPicker(BuildContext context, String title, int initialValue, Function(int) onChanged) {
+    int selectedValue = initialValue;
     showCupertinoModalPopup(
       context: context,
-      builder: (context) => Container(
-        height: 250,
-        padding: const EdgeInsets.only(top: 6.0),
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        color: CupertinoColors.systemBackground.resolveFrom(context),
-        child: SafeArea(
-          top: false,
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CupertinoButton(
-                    child: const Text('Cancel'),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-                  CupertinoButton(
-                    child: const Text('Done'),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-              Expanded(
-                child: CupertinoPicker(
-                  magnification: 1.22,
-                  squeeze: 1.2,
-                  useMagnifier: true,
-                  itemExtent: 32,
-                  scrollController: FixedExtentScrollController(
-                    initialItem: initialValue - 1,
-                  ),
-                  onSelectedItemChanged: (int selectedItem) {
-                    onChanged(selectedItem + 1);
-                  },
-                  children: List<Widget>.generate(60, (int index) {
-                    return Center(
-                      child: Text(
-                        '${index + 1} min',
-                      ),
-                    );
-                  }),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => Container(
+          height: 250,
+          padding: const EdgeInsets.only(top: 6.0),
+          margin: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          color: CupertinoColors.systemBackground.resolveFrom(context),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CupertinoButton(
+                      child: const Text('Cancel'),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+                    CupertinoButton(
+                      child: const Text('Done'),
+                      onPressed: () {
+                        onChanged(selectedValue);
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
                 ),
-              ),
-            ],
+                Expanded(
+                  child: CupertinoPicker(
+                    magnification: 1.22,
+                    squeeze: 1.2,
+                    useMagnifier: true,
+                    itemExtent: 32,
+                    scrollController: FixedExtentScrollController(
+                      initialItem: initialValue - 1,
+                    ),
+                    onSelectedItemChanged: (int index) {
+                      setState(() {
+                         selectedValue = index + 1;
+                      });
+                    },
+                    children: List<Widget>.generate(60, (int index) {
+                      return Center(
+                        child: Text(
+                          '${index + 1} min',
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -69,52 +77,59 @@ class SettingsPage extends StatelessWidget {
   void _showSoundPicker(BuildContext context, TimerService timerService, Function(String) onChanged) {
     final sounds = ['bell', 'digital', 'none'];
     final soundNames = {'bell': 'Bell', 'digital': 'Digital', 'none': 'None'};
+    String selectedSound = timerService.alarmSound;
     
     showCupertinoModalPopup(
       context: context,
-      builder: (context) => Container(
-        height: 250,
-        padding: const EdgeInsets.only(top: 6.0),
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        color: CupertinoColors.systemBackground.resolveFrom(context),
-        child: SafeArea(
-          top: false,
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CupertinoButton(
-                    child: const Text('Cancel'),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const Text('Alarm Sound', style: TextStyle(fontWeight: FontWeight.w600)),
-                  CupertinoButton(
-                    child: const Text('Done'),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-              Expanded(
-                child: CupertinoPicker(
-                  magnification: 1.22,
-                  squeeze: 1.2,
-                  useMagnifier: true,
-                  itemExtent: 32,
-                  scrollController: FixedExtentScrollController(
-                    initialItem: sounds.indexOf(timerService.alarmSound),
-                  ),
-                  onSelectedItemChanged: (int index) {
-                    final selectedSound = sounds[index];
-                    onChanged(selectedSound);
-                    timerService.previewSound(selectedSound);
-                  },
-                  children: sounds.map((s) => Center(child: Text(soundNames[s]!))).toList(),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => Container(
+          height: 250,
+          padding: const EdgeInsets.only(top: 6.0),
+          margin: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          color: CupertinoColors.systemBackground.resolveFrom(context),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CupertinoButton(
+                      child: const Text('Cancel'),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const Text('Alarm Sound', style: TextStyle(fontWeight: FontWeight.w600)),
+                    CupertinoButton(
+                      child: const Text('Done'),
+                      onPressed: () {
+                        onChanged(selectedSound);
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
                 ),
-              ),
-            ],
+                Expanded(
+                  child: CupertinoPicker(
+                    magnification: 1.22,
+                    squeeze: 1.2,
+                    useMagnifier: true,
+                    itemExtent: 32,
+                    scrollController: FixedExtentScrollController(
+                      initialItem: sounds.indexOf(timerService.alarmSound),
+                    ),
+                    onSelectedItemChanged: (int index) {
+                      setState(() {
+                         selectedSound = sounds[index];
+                      });
+                      timerService.previewSound(selectedSound);
+                    },
+                    children: sounds.map((s) => Center(child: Text(soundNames[s]!))).toList(),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -124,38 +139,49 @@ class SettingsPage extends StatelessWidget {
 
 
   void _showColorPicker(BuildContext context, TimerService timerService) {
+    Color selectedColor = Color(timerService.backgroundColor);
+
     showCupertinoModalPopup(
       context: context,
-      builder: (context) => Container(
-        height: 500,
-        padding: const EdgeInsets.all(16),
-        margin: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom),
-        color: CupertinoColors.systemBackground.resolveFrom(context),
-        child: SafeArea(
-          top: false,
-          child: Column(
-            children: [
-               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CupertinoButton(
-                    child: const Text('Done'),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-              Expanded(
-                child: ColorPicker(
-                  pickerColor: Color(timerService.backgroundColor),
-                  onColorChanged: (color) {
-                    timerService.updateSettings(backgroundColor: color.value);
-                  },
-                  labelTypes: const [],
-                  pickerAreaHeightPercent: 0.7,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => Container(
+          height: 500,
+          padding: const EdgeInsets.all(16),
+          margin: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom),
+          color: CupertinoColors.systemBackground.resolveFrom(context),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              children: [
+                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CupertinoButton(
+                      child: const Text('Cancel'),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    CupertinoButton(
+                      child: const Text('Done'),
+                      onPressed: () {
+                         timerService.updateSettings(backgroundColor: selectedColor.value);
+                         Navigator.pop(context);
+                      },
+                    ),
+                  ],
                 ),
-              ),
-            ],
+                Expanded(
+                  child: ColorPicker(
+                    pickerColor: selectedColor,
+                    onColorChanged: (color) {
+                      setState(() => selectedColor = color);
+                    },
+                    labelTypes: const [],
+                    pickerAreaHeightPercent: 0.7,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -178,52 +204,59 @@ class SettingsPage extends StatelessWidget {
   void _showWhiteNoisePicker(BuildContext context, TimerService timerService, Function(String) onChanged) {
     final sounds = ['rain', 'forest', 'none'];
     final soundNames = {'rain': 'Rain', 'forest': 'Forest', 'none': 'None'};
+    String selectedSound = timerService.whiteNoiseSound;
     
     showCupertinoModalPopup(
       context: context,
-      builder: (context) => Container(
-        height: 250,
-        padding: const EdgeInsets.only(top: 6.0),
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        color: CupertinoColors.systemBackground.resolveFrom(context),
-        child: SafeArea(
-          top: false,
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CupertinoButton(
-                    child: const Text('Cancel'),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const Text('Focus Sound', style: TextStyle(fontWeight: FontWeight.w600)),
-                  CupertinoButton(
-                    child: const Text('Done'),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-              Expanded(
-                child: CupertinoPicker(
-                  magnification: 1.22,
-                  squeeze: 1.2,
-                  useMagnifier: true,
-                  itemExtent: 32,
-                  scrollController: FixedExtentScrollController(
-                    initialItem: sounds.contains(timerService.whiteNoiseSound) ? sounds.indexOf(timerService.whiteNoiseSound) : 0,
-                  ),
-                  onSelectedItemChanged: (int index) {
-                    final selectedSound = sounds[index];
-                    onChanged(selectedSound);
-                    // No preview for white noise loop, it just plays if timer is running
-                  },
-                  children: sounds.map((s) => Center(child: Text(soundNames[s]!))).toList(),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => Container(
+          height: 250,
+          padding: const EdgeInsets.only(top: 6.0),
+          margin: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          color: CupertinoColors.systemBackground.resolveFrom(context),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CupertinoButton(
+                      child: const Text('Cancel'),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const Text('Focus Sound', style: TextStyle(fontWeight: FontWeight.w600)),
+                    CupertinoButton(
+                      child: const Text('Done'),
+                      onPressed: () {
+                         onChanged(selectedSound);
+                         Navigator.pop(context);
+                      },
+                    ),
+                  ],
                 ),
-              ),
-            ],
+                Expanded(
+                  child: CupertinoPicker(
+                    magnification: 1.22,
+                    squeeze: 1.2,
+                    useMagnifier: true,
+                    itemExtent: 32,
+                    scrollController: FixedExtentScrollController(
+                      initialItem: sounds.contains(timerService.whiteNoiseSound) ? sounds.indexOf(timerService.whiteNoiseSound) : 0,
+                    ),
+                    onSelectedItemChanged: (int index) {
+                      setState(() {
+                         selectedSound = sounds[index];
+                      });
+                      // No preview for white noise loop
+                    },
+                    children: sounds.map((s) => Center(child: Text(soundNames[s]!))).toList(),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -231,7 +264,6 @@ class SettingsPage extends StatelessWidget {
   }
 
   Widget _buildSectionHeader(BuildContext context, String title) {
-    // Removed unused isDarkMode
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
       child: Text(
@@ -259,16 +291,16 @@ class SettingsPage extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        color: Colors.transparent, // Hit test
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Reduced vertical padding
+        color: Colors.transparent,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
           children: [
             leading,
-            const SizedBox(width: 12), // Reduced spacing
+            const SizedBox(width: 12),
             Expanded(
               child: DefaultTextStyle(
                 style: TextStyle(
-                  fontSize: 15, // Reduced title font size
+                  fontSize: 15,
                   fontWeight: FontWeight.w400,
                   color: isDarkMode ? CupertinoColors.white : CupertinoColors.label.resolveFrom(context),
                 ),
@@ -280,7 +312,7 @@ class SettingsPage extends StatelessWidget {
               DefaultTextStyle(
                 style: TextStyle(
                   color: isDarkMode ? CupertinoColors.systemGrey2 : CupertinoColors.secondaryLabel.resolveFrom(context),
-                  fontSize: 14, // Reduced info font size
+                  fontSize: 14,
                 ),
                 child: additionalInfo,
               ),
@@ -297,20 +329,20 @@ class SettingsPage extends StatelessWidget {
 
   Widget _buildIcon(IconData icon, Color color) {
     return Container(
-      width: 28, // Reduced size
-      height: 28, // Reduced size
+      width: 28,
+      height: 28,
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(7), // Slightly tighter radius
+        borderRadius: BorderRadius.circular(7),
         boxShadow: [
           BoxShadow(
             color: color.withValues(alpha: 0.3),
-            blurRadius: 6, // Reduced blur
+            blurRadius: 6,
             offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Icon(icon, color: CupertinoColors.white, size: 16), // Reduced icon size
+      child: Icon(icon, color: CupertinoColors.white, size: 16),
     );
   }
 
@@ -321,11 +353,9 @@ class SettingsPage extends StatelessWidget {
 
     return CupertinoPageScaffold(
       backgroundColor: Colors.transparent,
-      child: RepaintBoundary( // Cache the static page for performance
+      child: RepaintBoundary(
         child: Stack(
           children: [
-            // Background (blurred to match main app feel or just transparent to show desktop behind if possible, 
-            // but here we likely want a solid but glass-like background for the settings page itself)
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(

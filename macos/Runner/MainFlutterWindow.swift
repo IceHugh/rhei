@@ -4,9 +4,15 @@ import FlutterMacOS
 class MainFlutterWindow: NSWindow {
   override func awakeFromNib() {
     let flutterViewController = FlutterViewController()
-    let windowFrame = self.frame
+    
+    // Set initial size to 400x600 to prevent resize glitch
+    let newSize = NSSize(width: 400, height: 600)
+    let newOrigin = self.frame.origin // Keep default origin or we can center later
+    let newFrame = NSRect(origin: newOrigin, size: newSize)
+    
     self.contentViewController = flutterViewController
-    self.setFrame(windowFrame, display: true)
+    self.setFrame(newFrame, display: true)
+    self.center() // Center on screen immediately
 
     RegisterGeneratedPlugins(registry: flutterViewController)
     

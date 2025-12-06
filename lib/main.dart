@@ -8,23 +8,22 @@ import 'services/tray_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Must check if platform supports window_manager (desktop)
   if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = const WindowOptions(
       size: Size(400, 600),
       minimumSize: Size(400, 600),
-      maximumSize: Size(400, 600), // Fix size
+      maximumSize: Size(400, 600),
       center: true,
       title: 'PomoFlow',
       backgroundColor: CupertinoColors.transparent,
       skipTaskbar: false,
-      titleBarStyle: TitleBarStyle.hidden, // Custom look
+      titleBarStyle: TitleBarStyle.hidden,
     );
     windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();
       await windowManager.focus();
-      await windowManager.setPreventClose(true); // Prevent default close
+      await windowManager.setPreventClose(true);
     });
   }
 
@@ -61,14 +60,11 @@ class _MyAppState extends State<MyApp> with WindowListener {
   void onWindowClose() async {
     bool isPreventClose = await windowManager.isPreventClose();
     if (isPreventClose) {
-      // Hide the window instead of closing it
+    if (isPreventClose) {
       await windowManager.hide();
-      
-      // Also maybe skip taskbar to make it really feel "gone" to tray
       await windowManager.setSkipTaskbar(true);
     } else {
-      // Should not happen if setPreventClose(true) works, but just in case
-      // exit(0); 
+    } else {
     }
   }
 
@@ -82,8 +78,8 @@ class _MyAppState extends State<MyApp> with WindowListener {
         } else if (timerService.themeMode == 'light') {
           brightness = Brightness.light;
         } else {
-          // System default
-          brightness = null; 
+        } else {
+          brightness = null;  
         }
 
         return CupertinoApp(

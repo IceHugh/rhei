@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:audioplayers/audioplayers.dart'; // Keep commented until assets are real, or use if we find a URL mechanism.
+import 'package:audioplayers/audioplayers.dart';
 import 'services/tray_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
@@ -23,21 +23,19 @@ class TimerService with ChangeNotifier {
   int _focusMinutes = 25;
   int _shortBreakMinutes = 5;
   int _longBreakMinutes = 15;
-  bool _loopMode = false; // "Auto-run" / "Loop"
-  int _cycleCount = 0; // Tracks consecutive focus sessions
+  bool _loopMode = true;
+  int _cycleCount = 0;
   
-  // bool _autoStartBreaks = false; // Deprecated by Loop Mode
-  // bool _autoStartPomodoros = false; // Deprecated by Loop Mode
-  String _themeMode = 'system'; // 'system', 'light', 'dark'
-  bool _tickSound = false;
+  String _themeMode = 'system';
+  bool _tickSound = true;
   String _alarmSound = 'bell';
-  String _whiteNoiseSound = 'rain'; // Default
+  String _whiteNoiseSound = 'rain';
   bool _enableNotifications = true;
   bool _alwaysOnTop = false;
 
   // Background Settings
-  String _backgroundType = 'default'; // 'default', 'color', 'image'
-  int _backgroundColor = 0xFF2196F3; // Default blue
+  String _backgroundType = 'default';
+  int _backgroundColor = 0xFF2196F3;
   String _backgroundImagePath = '';
 
   // Notifications
@@ -104,10 +102,10 @@ class TimerService with ChangeNotifier {
     _focusMinutes = prefs.getInt('focusMinutes') ?? 25;
     _shortBreakMinutes = prefs.getInt('shortBreakMinutes') ?? 5;
     _longBreakMinutes = prefs.getInt('longBreakMinutes') ?? 15;
-    _loopMode = prefs.getBool('loopMode') ?? false;
+    _loopMode = prefs.getBool('loopMode') ?? true;
     _cycleCount = prefs.getInt('cycleCount') ?? 0;
     _themeMode = prefs.getString('themeMode') ?? 'system';
-    _tickSound = prefs.getBool('tickSound') ?? false;
+    _tickSound = prefs.getBool('tickSound') ?? true;
 
     _alarmSound = prefs.getString('alarmSound') ?? 'bell';
     _whiteNoiseSound = prefs.getString('whiteNoiseSound') ?? 'rain';
@@ -128,7 +126,6 @@ class TimerService with ChangeNotifier {
       _applyAlwaysOnTop(true);
     }
 
-    // Check white noise on load
     _manageWhiteNoise();
     notifyListeners();
   }
@@ -151,70 +148,68 @@ class TimerService with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     if (focus != null) {
       _focusMinutes = focus;
-      prefs.setInt('focusMinutes', focus);
+      await prefs.setInt('focusMinutes', focus);
       if (_currentMode == TimerMode.focus && !_isRunning) {
         _remainingSeconds = focus * 60;
       }
     }
     if (shortBreak != null) {
       _shortBreakMinutes = shortBreak;
-      prefs.setInt('shortBreakMinutes', shortBreak);
+      await prefs.setInt('shortBreakMinutes', shortBreak);
       if (_currentMode == TimerMode.shortBreak && !_isRunning) {
         _remainingSeconds = shortBreak * 60;
       }
     }
     if (longBreak != null) {
       _longBreakMinutes = longBreak;
-      prefs.setInt('longBreakMinutes', longBreak);
+      await prefs.setInt('longBreakMinutes', longBreak);
       if (_currentMode == TimerMode.longBreak && !_isRunning) {
         _remainingSeconds = longBreak * 60;
       }
     }
     if (loopMode != null) {
       _loopMode = loopMode;
-      prefs.setBool('loopMode', loopMode);
+      await prefs.setBool('loopMode', loopMode);
     }
     if (themeMode != null) {
       _themeMode = themeMode;
-      prefs.setString('themeMode', themeMode);
+      await prefs.setString('themeMode', themeMode);
     }
     if (tickSound != null) {
       _tickSound = tickSound;
-      prefs.setBool('tickSound', tickSound);
+      await prefs.setBool('tickSound', tickSound);
     }
 
     if (alarmSound != null) {
       _alarmSound = alarmSound;
-      prefs.setString('alarmSound', alarmSound);
-      // Preview on change
+      await prefs.setString('alarmSound', alarmSound);
       previewSound(alarmSound);
     }
     if (whiteNoiseSound != null) {
       _whiteNoiseSound = whiteNoiseSound;
-      prefs.setString('whiteNoiseSound', whiteNoiseSound);
-      // We don't preview loop sounds, but we update the background noise immediately
+      await prefs.setString('whiteNoiseSound', whiteNoiseSound);
     }
     if (enableNotifications != null) {
       _enableNotifications = enableNotifications;
-      prefs.setBool('enableNotifications', enableNotifications);
+      await prefs.setBool('enableNotifications', enableNotifications);
     }
     if (alwaysOnTop != null) {
       _alwaysOnTop = alwaysOnTop;
-      prefs.setBool('alwaysOnTop', alwaysOnTop);
+      await prefs.setBool('alwaysOnTop', alwaysOnTop);
       _applyAlwaysOnTop(alwaysOnTop);
     }
     
     if (backgroundType != null) {
       _backgroundType = backgroundType;
-      prefs.setString('backgroundType', backgroundType);
+      await prefs.setString('backgroundType', backgroundType);
     }
     if (backgroundColor != null) {
       _backgroundColor = backgroundColor;
-      prefs.setInt('backgroundColor', backgroundColor);
+      await prefs.setInt('backgroundColor', backgroundColor);
     }
     if (backgroundImagePath != null) {
       _backgroundImagePath = backgroundImagePath;
-      prefs.setString('backgroundImagePath', backgroundImagePath);
+      await prefs.setString('backgroundImagePath', backgroundImagePath);
     }
     
     // Check if we need to update white noise (e.g. if we add a noise setting later)
@@ -226,10 +221,9 @@ class TimerService with ChangeNotifier {
   Future<void> saveBackgroundImage(String sourcePath) async {
     try {
       final appDir = await getApplicationDocumentsDirectory();
-      final fileName = 'bg_${DateTime.now().millisecondsSinceEpoch}.jpg'; // Unique name
+      final fileName = 'bg_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final newPath = '${appDir.path}/$fileName';
       
-      // Delete old background image if it exists and is in the app directory
       if (_backgroundImagePath.isNotEmpty) {
         final oldFile = File(_backgroundImagePath);
         if (await oldFile.exists() && _backgroundImagePath.startsWith(appDir.path)) {
@@ -249,7 +243,6 @@ class TimerService with ChangeNotifier {
       await updateSettings(backgroundType: 'image', backgroundImagePath: newPath);
     } catch (e) {
       if (kDebugMode) print('Error saving background image: $e');
-      // Fallback: just try to use source path if copy fails
       await updateSettings(backgroundType: 'image', backgroundImagePath: sourcePath);
     }
   }

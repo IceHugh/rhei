@@ -77,8 +77,10 @@ jobs:
         run: flutter pub get
       
       # macOS Build
+      - name: Extract Version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
       - name: Build macOS App
-        run: flutter build macos --release
+        run: flutter build macos --release --dart-define=APP_VERSION=${{ env.VERSION }}
       - name: Package macOS App
         run: |
           cd build/macos/Build/Products/Release
@@ -86,7 +88,7 @@ jobs:
 
       # iOS Build
       - name: Build iOS App
-        run: flutter build ios --release --no-codesign
+        run: flutter build ios --release --no-codesign --dart-define=APP_VERSION=${{ env.VERSION }}
       - name: Package iOS App
         run: |
           cd build/ios/iphoneos
@@ -120,8 +122,11 @@ jobs:
             windows-pub-
       - name: Get Dependencies
         run: flutter pub get
+      - name: Extract Version
+        shell: bash
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
       - name: Build Windows App
-        run: flutter build windows --release
+        run: flutter build windows --release --dart-define=APP_VERSION=${{ env.VERSION }}
       - name: Package Windows App
         run: |
           Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath PomoFlow-Windows.zip

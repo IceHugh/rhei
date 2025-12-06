@@ -130,12 +130,39 @@ class _TimerBackground extends StatelessWidget {
             color: Color(timerService.backgroundColor),
           );
         } else if (timerService.backgroundType == 'image' && timerService.backgroundImagePath.isNotEmpty) {
-           return Image.file(
-             File(timerService.backgroundImagePath),
-             fit: BoxFit.cover,
-             width: double.infinity,
-             height: double.infinity,
-             errorBuilder: (ctx, err, stack) => Container(color: Colors.black), // Fallback
+           return Stack(
+             fit: StackFit.expand,
+             children: [
+               // Fallback Gradient while loading
+               Container(
+                 decoration: BoxDecoration(
+                   gradient: LinearGradient(
+                     begin: Alignment.topLeft,
+                     end: Alignment.bottomRight,
+                     colors: isDarkMode 
+                        ? [const Color(0xFF2E3192), const Color(0xFF1BFFFF)]
+                        : [const Color(0xFFA1C4FD), const Color(0xFFC2E9FB)],
+                   ),
+                 ),
+               ),
+               // The Image with fade-in
+               Image.file(
+                 File(timerService.backgroundImagePath),
+                 fit: BoxFit.cover,
+                 width: double.infinity,
+                 height: double.infinity,
+                 errorBuilder: (ctx, err, stack) => Container(color: Colors.black),
+                 frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                   if (wasSynchronouslyLoaded) return child;
+                   return AnimatedOpacity(
+                     opacity: frame == null ? 0 : 1,
+                     duration: const Duration(milliseconds: 500),
+                     curve: Curves.easeOut,
+                     child: child,
+                   );
+                 },
+               ),
+             ],
            );
         }
 
