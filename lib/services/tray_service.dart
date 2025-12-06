@@ -41,9 +41,7 @@ class TrayService with TrayListener {
     if (Platform.isMacOS) {
       await trayManager.setTitle(text);
     } else {
-      // Windows/Linux system trays often don't support "title" next to icon in same way
-      // They use tooltips. We'll set tooltip for them.
-      await trayManager.setToolTip(text);
+      // User requested only icon for Windows tray
     }
   }
 

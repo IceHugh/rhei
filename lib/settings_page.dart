@@ -649,19 +649,21 @@ class SettingsPage extends StatelessWidget {
                                   onTap: () => _pickImage(timerService),
                                 ),
                               ],
-                              const Divider(height: 1, indent: 60, color: Colors.black12),
-                              _buildGlassTile(
-                                context: context,
-                                leading: _buildIcon(CupertinoIcons.layers, CupertinoColors.systemPurple),
-                                title: const Text('Always on Top'),
-                                trailing: Transform.scale(
-                                  scale: 0.8,
-                                  child: CupertinoSwitch(
-                                    value: timerService.alwaysOnTop,
-                                    onChanged: (value) => timerService.updateSettings(alwaysOnTop: value),
+                              if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) ...[
+                                const Divider(height: 1, indent: 60, color: Colors.black12),
+                                _buildGlassTile(
+                                  context: context,
+                                  leading: _buildIcon(CupertinoIcons.layers, CupertinoColors.systemPurple),
+                                  title: const Text('Always on Top'),
+                                  trailing: Transform.scale(
+                                    scale: 0.8,
+                                    child: CupertinoSwitch(
+                                      value: timerService.alwaysOnTop,
+                                      onChanged: (value) => timerService.updateSettings(alwaysOnTop: value),
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ],
                           ),
                         ),

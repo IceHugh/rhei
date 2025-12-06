@@ -127,12 +127,12 @@ jobs:
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
       - name: Build Windows App
         run: flutter build windows --release --dart-define=APP_VERSION=${{ env.VERSION }}
-      - name: Package Windows App
+      - name: Build Windows Installer
         run: |
-          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath PomoFlow-Windows.zip
-      - name: Release Windows App
+          iscc windows/runner/iss_config.iss
+      - name: Release Windows Installer
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: PomoFlow-Windows.zip
+          files: build/windows/runner/Release/Output/PomoFlow_Setup.exe
 
