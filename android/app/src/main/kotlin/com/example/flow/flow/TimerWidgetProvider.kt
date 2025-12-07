@@ -64,13 +64,14 @@ class TimerWidgetProvider : HomeWidgetProvider() {
         // --- Data Retrieval ---
         val isRunning = widgetData.getBoolean("isRunning", false)
         val status = widgetData.getString("status", "Focusing") ?: "Focusing"
+        val savedTime = widgetData.getString("time", null)
         
-        // Determine display time based on running state
-        val time = if (isRunning) {
-            // Running: show current countdown time
-            widgetData.getString("time", "25:00") ?: "25:00"
+        // Determine display time
+        val time = if (savedTime != null && savedTime.isNotEmpty()) {
+            // App is alive (running or paused): show saved time
+            savedTime
         } else {
-            // Not running: show initial time based on mode
+            // App was killed: show initial time based on mode
             val focusMinutes = widgetData.getInt("focusMinutes", 25)
             val shortBreakMinutes = widgetData.getInt("shortBreakMinutes", 5)
             val longBreakMinutes = widgetData.getInt("longBreakMinutes", 15)
@@ -83,11 +84,8 @@ class TimerWidgetProvider : HomeWidgetProvider() {
             String.format("%02d:00", minutes)
         }
         
-        val progress = if (isRunning) {
-            widgetData.getInt("progress", 100)
-        } else {
-            100 // Full progress when not running
-        }
+        // Progress: use saved value if available, otherwise full
+        val progress = widgetData.getInt("progress", 100)
         
         // Style Data
         val contentColor = getColorFromPrefs(widgetData, "contentColor", Color.WHITE)

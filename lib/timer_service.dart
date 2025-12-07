@@ -97,6 +97,10 @@ class TimerService with ChangeNotifier {
       HomeWidget.registerInteractivityCallback(backgroundCallback);
       debugPrint("TimerService: Background callback registered");
       
+      // Clear widget time on app start to show initial state
+      HomeWidget.saveWidgetData<String>('time', '');
+      debugPrint("TimerService: Cleared widget time on app start");
+      
       // Listen for Widget Clicks (Legacy App Launch handling)
       HomeWidget.widgetClicked.listen((Uri? uri) {
         debugPrint("TimerService: Widget Clicked (Legacy Stream): $uri");
