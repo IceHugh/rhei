@@ -45,15 +45,6 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info" />
         </receiver>
-        <!-- Widget click receiver for Chinese ROM compatibility (explicit broadcast) -->
-        <receiver
-            android:name=".WidgetClickReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.example.flow.WIDGET_CLICK" />
-                <action android:name="com.example.flow.TOGGLE_TIMER" />
-            </intent-filter>
-        </receiver>
         <!-- Required for background interaction (Broadcast) -->
         <receiver android:name="es.antonborri.home_widget.HomeWidgetBackgroundReceiver" 
             android:exported="true">

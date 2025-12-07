@@ -62,10 +62,32 @@ class TimerWidgetProvider : HomeWidgetProvider() {
         widgetData: SharedPreferences
     ) {
         // --- Data Retrieval ---
-        val time = widgetData.getString("time", "25:00") ?: "25:00"
-        val progress = widgetData.getInt("progress", 100)
         val isRunning = widgetData.getBoolean("isRunning", false)
         val status = widgetData.getString("status", "Focusing") ?: "Focusing"
+        
+        // Determine display time based on running state
+        val time = if (isRunning) {
+            // Running: show current countdown time
+            widgetData.getString("time", "25:00") ?: "25:00"
+        } else {
+            // Not running: show initial time based on mode
+            val focusMinutes = widgetData.getInt("focusMinutes", 25)
+            val shortBreakMinutes = widgetData.getInt("shortBreakMinutes", 5)
+            val longBreakMinutes = widgetData.getInt("longBreakMinutes", 15)
+            
+            val minutes = when (status) {
+                "Break" -> shortBreakMinutes
+                "Long Break" -> longBreakMinutes
+                else -> focusMinutes
+            }
+            String.format("%02d:00", minutes)
+        }
+        
+        val progress = if (isRunning) {
+            widgetData.getInt("progress", 100)
+        } else {
+            100 // Full progress when not running
+        }
         
         // Style Data
         val contentColor = getColorFromPrefs(widgetData, "contentColor", Color.WHITE)
@@ -101,60 +123,34 @@ class TimerWidgetProvider : HomeWidgetProvider() {
             Log.d(TAG, "Widget $widgetId: Updated progress to $progress")
         }
         
-        // Always update pause icon visibility (lightweight operation)
-        val isFocusMode = status == "Focusing"
-        val shouldShowPause = !isRunning && isFocusMode
+        // Apply content color to chronometer
+        views.setTextColor(R.id.timer_display, contentColor)
         
-        if (shouldShowPause) {
-            views.setViewVisibility(R.id.widget_action_icon, View.VISIBLE)
-            views.setImageViewResource(R.id.widget_action_icon, R.drawable.ic_pause_state)
-            views.setInt(R.id.widget_action_icon, "setColorFilter", contentColor)
-            views.setViewVisibility(R.id.widget_pause_overlay, View.VISIBLE)
-        } else {
-            views.setViewVisibility(R.id.widget_action_icon, View.INVISIBLE)
-            views.setViewVisibility(R.id.widget_pause_overlay, View.GONE)
-        }
+        // --- Update Progress Bar ---
+        views.setProgressBar(R.id.widget_progress_bar, 100, progress, false)
         
-        // Always update background (lightweight operation)
+        // --- Background ---
         if (backgroundType == "color") {
             views.setInt(R.id.widget_background_layer, "setColorFilter", backgroundColor)
         } else {
             views.setInt(R.id.widget_background_layer, "setColorFilter", 0)
         }
         
-        // Set up click interactions only on first update
-        if (isFirstUpdate) {
-            // Click 1: Widget root - directly open MainActivity (works even when app is killed)
-            val openAppIntent = Intent(context, MainActivity::class.java).apply {
-                action = Intent.ACTION_MAIN
-                addCategory(Intent.CATEGORY_LAUNCHER)
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            }
-            
-            val openAppPendingIntent = PendingIntent.getActivity(
-                context,
-                widgetId * 2,
-                openAppIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-            views.setOnClickPendingIntent(R.id.widget_root, openAppPendingIntent)
-            
-            // Click 2: Timer container - toggle timer via BroadcastReceiver
-            val toggleIntent = Intent(context, WidgetClickReceiver::class.java).apply {
-                action = WidgetClickReceiver.ACTION_TOGGLE_TIMER
-                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
-            }
-            
-            val togglePendingIntent = PendingIntent.getBroadcast(
-                context,
-                widgetId * 2 + 1,
-                toggleIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-            views.setOnClickPendingIntent(R.id.timer_container, togglePendingIntent)
-            
-            Log.d(TAG, "Widget $widgetId: Set up click interactions (first update)")
+        // --- Click Handler: Open App ---
+        // Entire widget opens the app when clicked
+        val openAppIntent = Intent(context, MainActivity::class.java).apply {
+            action = Intent.ACTION_MAIN
+            addCategory(Intent.CATEGORY_LAUNCHER)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
+        
+        val openAppPendingIntent = PendingIntent.getActivity(
+            context,
+            widgetId,
+            openAppIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        views.setOnClickPendingIntent(R.id.widget_root, openAppPendingIntent)
         
         // Use partiallyUpdateAppWidget to avoid UI flicker
         appWidgetManager.partiallyUpdateAppWidget(widgetId, views)

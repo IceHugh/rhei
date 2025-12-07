@@ -574,6 +574,11 @@ class TimerService with ChangeNotifier {
         // Sync State
         await HomeWidget.saveWidgetData<bool>('isRunning', _isRunning);
         
+        // Sync timer duration settings (for widget to show initial time when stopped)
+        await HomeWidget.saveWidgetData<int>('focusMinutes', _focusMinutes);
+        await HomeWidget.saveWidgetData<int>('shortBreakMinutes', _shortBreakMinutes);
+        await HomeWidget.saveWidgetData<int>('longBreakMinutes', _longBreakMinutes);
+        
         // Sync Styles
         await HomeWidget.saveWidgetData<int>('contentColor', _contentColor);
         await HomeWidget.saveWidgetData<int>('backgroundColor', _backgroundColor);

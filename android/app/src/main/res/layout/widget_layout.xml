@@ -55,22 +55,4 @@
                 
         </RelativeLayout>
     </FrameLayout>
-
-    <!-- Layer 4: Pause Mask (covers entire widget) -->
-    <ImageView
-        android:id="@+id/widget_pause_overlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="#40000000"
-        android:scaleType="fitXY"
-        android:visibility="gone" />
-
-    <!-- Layer 5: Pause Icon (Centered) -->
-    <ImageView
-        android:id="@+id/widget_action_icon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:src="@drawable/ic_pause_state"
-        android:layout_gravity="center"
-        android:visibility="invisible" />
 </FrameLayout>
