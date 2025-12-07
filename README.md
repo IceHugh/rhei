@@ -1,10 +1,12 @@
 <div align="center">
 
-# PomoFlow 🍅
+# Rhei
 
-<img src="logo.png" alt="PomoFlow Logo" width="200"/>
+<p align="center">
+  <img src="assets/images/logo.png" height="128" alt="Rhei Logo" />
+</p>
 
-A modern, high-performance Pomodoro timer application built with Flutter, featuring a stunning Glassmorphism UI design.
+**Rhei** is a cross-platform Focus Timer application built with Flutter, designed to help you get into the *flow*. It features a modern, high-performance user experience with a stunning Glassmorphism UI design. Rhei (from *Panta Rhei*) embodies the concept of constant flow and change.
 
 </div>
 

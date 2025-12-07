@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     
     <application
-        android:label="PomoFlow"
+        android:label="Rhei"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity
