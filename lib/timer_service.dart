@@ -48,7 +48,6 @@ class TimerService with ChangeNotifier {
   int _longBreakMinutes = 15;
   int _cycleCount = 0;
   bool _loopMode = true;
-  int _tickCount = 0; // Counter for widget update throttling
   
   String _themeMode = 'system';
   bool _tickSound = true;
@@ -81,29 +80,31 @@ class TimerService with ChangeNotifier {
     // Set up white noise loop
     _whiteNoisePlayer.setReleaseMode(ReleaseMode.loop);
     
-    // Register Port for Background Communication
-    IsolateNameServer.removePortNameMapping('flow_timer_service_port');
-    bool registered = IsolateNameServer.registerPortWithName(_port.sendPort, 'flow_timer_service_port');
-    debugPrint("TimerService: Port registered? $registered");
-    
-    _port.listen((message) {
-      debugPrint("TimerService: Received message on port: $message");
-      if (message == 'toggle') {
-        toggleTimer();
-      }
-    });
-    
-    // Register Background Callback
-    HomeWidget.registerInteractivityCallback(backgroundCallback);
-    debugPrint("TimerService: Background callback registered");
-    
-    // Listen for Widget Clicks (Legacy App Launch handling)
-    HomeWidget.widgetClicked.listen((Uri? uri) {
-      debugPrint("TimerService: Widget Clicked (Legacy Stream): $uri");
-      if (uri?.host == 'toggle') {
-        toggleTimer();
-      }
-    });
+    // Register Port for Background Communication (Android only)
+    if (Platform.isAndroid) {
+      IsolateNameServer.removePortNameMapping('flow_timer_service_port');
+      bool registered = IsolateNameServer.registerPortWithName(_port.sendPort, 'flow_timer_service_port');
+      debugPrint("TimerService: Port registered? $registered");
+      
+      _port.listen((message) {
+        debugPrint("TimerService: Received message on port: $message");
+        if (message == 'toggle') {
+          toggleTimer();
+        }
+      });
+      
+      // Register Background Callback
+      HomeWidget.registerInteractivityCallback(backgroundCallback);
+      debugPrint("TimerService: Background callback registered");
+      
+      // Listen for Widget Clicks (Legacy App Launch handling)
+      HomeWidget.widgetClicked.listen((Uri? uri) {
+        debugPrint("TimerService: Widget Clicked (Legacy Stream): $uri");
+        if (uri?.host == 'toggle') {
+          toggleTimer();
+        }
+      });
+    }
   }
 
   Future<void> _initNotifications() async {
@@ -398,14 +399,12 @@ class TimerService with ChangeNotifier {
 
   void _startTimer() {
     _isRunning = true;
-    _tickCount = 0; // Reset tick counter
     _manageWhiteNoise(); // Start noise if needed
     _updateWidget(); // Immediate update to show "Running" state
     
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_remainingSeconds > 0) {
         _remainingSeconds--;
-        _tickCount++;
         _updateBadge(); // Update tray only, not widget
         
         // Update widget every second for time display

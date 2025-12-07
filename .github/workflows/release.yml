@@ -26,9 +26,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.pub-cache
-          key: android-pub-${{ hashFiles('**/pubspec.lock') }}
-          restore-keys: |
-            android-pub-
+          key: ${{ runner.os }}-android-pub-cache
       - name: Get Dependencies
         run: flutter pub get
       - name: Decode Keystore
@@ -70,9 +68,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.pub-cache
-          key: apple-pub-${{ hashFiles('**/pubspec.lock') }}
-          restore-keys: |
-            apple-pub-
+          key: ${{ runner.os }}-apple-pub-cache
       - name: Get Dependencies
         run: flutter pub get
       
@@ -117,9 +113,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~\AppData\Local\Pub\Cache
-          key: windows-pub-${{ hashFiles('**/pubspec.lock') }}
-          restore-keys: |
-            windows-pub-
+          key: ${{ runner.os }}-windows-pub-cache
       - name: Get Dependencies
         run: flutter pub get
       - name: Extract Version

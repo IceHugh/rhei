@@ -31,8 +31,10 @@ void main() async {
     });
   }
 
-  // Register Background Callback early
-  HomeWidget.registerInteractivityCallback(backgroundCallback);
+  // Register Background Callback early (Android only)
+  if (Platform.isAndroid) {
+    HomeWidget.registerInteractivityCallback(backgroundCallback);
+  }
 
   runApp(
     ChangeNotifierProvider(
