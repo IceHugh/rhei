@@ -1,4 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Permission for re-registering widget PendingIntents after device boot (Android 15 compatibility) -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    
     <application
         android:label="PomoFlow"
         android:name="${applicationName}"
@@ -42,11 +45,30 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info" />
         </receiver>
+        <!-- Widget click receiver for Chinese ROM compatibility (explicit broadcast) -->
+        <receiver
+            android:name=".WidgetClickReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.example.flow.WIDGET_CLICK" />
+                <action android:name="com.example.flow.TOGGLE_TIMER" />
+            </intent-filter>
+        </receiver>
         <!-- Required for background interaction (Broadcast) -->
         <receiver android:name="es.antonborri.home_widget.HomeWidgetBackgroundReceiver" 
             android:exported="true">
             <intent-filter>
                 <action android:name="es.antonborri.home_widget.action.BACKGROUND" />
+            </intent-filter>
+        </receiver>
+        <!-- Boot receiver for Android 15 compatibility - re-registers widget PendingIntents -->
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
     </application>
@@ -62,3 +84,4 @@
         </intent>
     </queries>
 </manifest>
+
