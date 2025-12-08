@@ -1,4 +1,4 @@
-name: Release PomoFlow
+name: Release Rhei
 
 on:
   push:
@@ -80,7 +80,7 @@ jobs:
       - name: Package macOS App
         run: |
           cd build/macos/Build/Products/Release
-          zip -r PomoFlow-macOS.zip PomoFlow.app
+          zip -r Rhei-macOS.zip Rhei.app
 
       # iOS Build
       - name: Build iOS App
@@ -88,7 +88,7 @@ jobs:
       - name: Package iOS App
         run: |
           cd build/ios/iphoneos
-          zip -r PomoFlow-iOS-Unsigned.zip Runner.app
+          zip -r Rhei-iOS-Unsigned.zip Runner.app
 
       # Unified Release
       - name: Release Apple Assets
@@ -96,8 +96,8 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            build/macos/Build/Products/Release/PomoFlow-macOS.zip
-            build/ios/iphoneos/PomoFlow-iOS-Unsigned.zip
+            build/macos/Build/Products/Release/Rhei-macOS.zip
+            build/ios/iphoneos/Rhei-iOS-Unsigned.zip
 
   build-windows:
     name: Windows Build
@@ -128,5 +128,4 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: build/windows/runner/Release/Output/PomoFlow_Setup.exe
-
+          files: build/windows/runner/Release/Output/Rhei_Setup.exe
