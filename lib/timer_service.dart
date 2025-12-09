@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 import 'dart:isolate';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -29,7 +30,7 @@ Future<void> backgroundCallback(Uri? uri) async {
   }
 }
 
-class TimerService with ChangeNotifier {
+class TimerService with ChangeNotifier, WidgetsBindingObserver {
   static const platform = MethodChannel('com.example.flow/timer');
 
   // Services
@@ -59,6 +60,11 @@ class TimerService with ChangeNotifier {
   TimerService() {
     _loadSettings();
     _initNotifications();
+    
+    // Register lifecycle observer for desktop platforms to handle system sleep
+    if (Platform.isMacOS || Platform.isWindows) {
+      WidgetsBinding.instance.addObserver(this);
+    }
     
     // Register Port for Background Communication (Android only)
     if (Platform.isAndroid) {
@@ -155,6 +161,21 @@ class TimerService with ChangeNotifier {
     _manageWhiteNoise();
     _updateWidget();
     notifyListeners();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Only handle on desktop platforms
+    if (!Platform.isMacOS && !Platform.isWindows) return;
+    
+    if (state == AppLifecycleState.paused) {
+      // System is going to sleep, pause timer if running
+      if (_isRunning) {
+        _stopTimer(resetUI: false);
+      }
+    }
+    // Note: We don't auto-resume on AppLifecycleState.resumed
+    // User needs to manually start the timer again
   }
 
   Future<void> updateSettings({
@@ -461,8 +482,62 @@ class TimerService with ChangeNotifier {
     }
   }
 
-  void _playCompletionSound() {
-    previewSound(_settingsManager.alarmSound);
+  Future<void> _playCompletionSound() async {
+    try {
+      if (_settingsManager.alarmSound == 'none') {
+        return;
+      }
+      
+      // Pause ambient sound before playing alarm
+      await _ambientSoundManager.stopSound();
+      
+      // Stop alarm player if playing
+      if (_alarmPlayer.state == PlayerState.playing || 
+          _alarmPlayer.state == PlayerState.paused) {
+        await _alarmPlayer.stop();
+      }
+      
+      // Small delay to ensure previous operation completes
+      await Future.delayed(const Duration(milliseconds: 50));
+      
+      // Set to play once (not loop)
+      await _alarmPlayer.setReleaseMode(ReleaseMode.release);
+      
+      // Play alarm sound
+      if (_settingsManager.alarmSound == 'bell' || 
+          _settingsManager.alarmSound == 'beep1' || 
+          _settingsManager.alarmSound == 'beep2' ||
+          _settingsManager.alarmSound == 'chirps' || 
+          _settingsManager.alarmSound == 'digital' || 
+          _settingsManager.alarmSound == 'retro') {
+        // Built-in alarm sounds
+        await _alarmPlayer.play(AssetSource('sounds/alarms/${_settingsManager.alarmSound}.mp3'));
+      } else {
+        // Custom sound - find by ID
+        try {
+          final customSound = _alarmSoundManager.customAlarmSounds.firstWhere(
+            (s) => s.id == _settingsManager.alarmSound,
+          );
+          await _alarmPlayer.play(DeviceFileSource(customSound.filePath));
+        } catch (e) {
+          if (kDebugMode) print('Custom alarm sound not found, ID: ${_settingsManager.alarmSound}');
+          // Resume ambient sound even if alarm failed
+          _manageWhiteNoise();
+          return;
+        }
+      }
+      
+      // Listen for completion and resume ambient sound
+      _alarmPlayer.onPlayerComplete.listen((_) {
+        _manageWhiteNoise();
+      });
+      
+      HapticFeedback.heavyImpact();
+    } catch (e) {
+      if (kDebugMode) print("Error playing completion sound: $e");
+      // Resume ambient sound if error occurred
+      _manageWhiteNoise();
+    }
   }
 
   Future<void> _manageWhiteNoise() async {
@@ -501,6 +576,11 @@ class TimerService with ChangeNotifier {
 
   @override
   void dispose() {
+    // Remove lifecycle observer
+    if (Platform.isMacOS || Platform.isWindows) {
+      WidgetsBinding.instance.removeObserver(this);
+    }
+    
     _timer?.cancel();
     
     // Stop and dispose audio players safely

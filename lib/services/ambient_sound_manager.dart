@@ -116,7 +116,7 @@ class AmbientSoundManager {
   Future<String?> deleteCustomSound(String id) async {
     try {
       // Check if it's a built-in sound
-      if (id == 'rain' || id == 'forest') {
+      if (id == 'rain' || id == 'brook' || id == 'ocean') {
          await hideSound(id);
          return id;
       }
@@ -144,7 +144,7 @@ class AmbientSoundManager {
 
   // Play ambient sound
   Future<void> playSound(String soundId, bool isRunning, TimerMode mode) async {
-    if (isRunning && mode == TimerMode.focus) {
+    if (isRunning) {
       if (soundId == 'none') {
         await _stopPlayerSafely();
         return;
@@ -158,11 +158,13 @@ class AmbientSoundManager {
           await Future.delayed(const Duration(milliseconds: 50));
         }
 
+        // Set loop mode for ambient sounds
+        await _whiteNoisePlayer.setReleaseMode(ReleaseMode.loop);
+
         // Check if it's a built-in sound or custom sound
-        if (soundId == 'rain' || soundId == 'forest') {
+        if (soundId == 'rain' || soundId == 'brook' || soundId == 'ocean') {
           // Built-in sounds
-          String fileName = soundId == 'rain' ? 'ambient/rain.mp3' : 'ambient/forest.mp3';
-          await _whiteNoisePlayer.play(AssetSource('sounds/$fileName'));
+          await _whiteNoisePlayer.play(AssetSource('sounds/ambient/$soundId.mp3'));
         } else {
           // Custom sound - find by ID
           try {
