@@ -24,6 +24,8 @@
 - **📐 Layout Options**: Switch between the focused "Default" view or the aesthetic "Gallery" mode.
 - **🎨 Visual Customization**: Fine-tune UI opacity, select your favorite font, and toggle Light/Dark themes.
 - **⏱️ Customizable Timer**: Flexible focus and break durations to suit your workflow.
+  - **Standard Pomodoro Loop**: 4 Focus sessions + 4 Breaks (Short/Long) per cycle.
+  - **Visual Cycle Indicator**: Minimalist dots indicator to track your daily progress.
 - **🔊 Immersive Sound System**:
   - Custom alarm and ambient sounds powered by `audioplayers`
   - Modern bottom-sheet sound picker with 4-column grid layout

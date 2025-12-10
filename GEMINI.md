@@ -5,6 +5,8 @@
 
 **Key Features:**
 - **Pomodoro Timer**: Core focus/break timer functionality.
+  - **Standard Cycle Logic**: 4 Focus sessions with Short/Long breaks.
+  - **Visual Cycle Indicator**: Dots UI to track progress within the current loop.
 - **Layout Modes**: "Default" and "Gallery" layouts for different visual preferences.
 - **UI Customization**: Adjustable UI opacity, font selection, and theme modes (Light/Dark/System).
 - **Sound System**: 
